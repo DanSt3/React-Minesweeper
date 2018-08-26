@@ -1,0 +1,14 @@
+.gridContainer {
+    align-items: center;
+    background-color: teal;
+    display: flex;
+    justify-content: center;
+    max-height: 816px;
+    padding: 10px;
+    width: 1020px;
+}
+
+.gridTable {
+    background-color: lightgray;
+    border-collapse: collapse;
+}

@@ -4,10 +4,10 @@ import Counter from '../components/Counter';
 import ResetButton from '../components/ResetButton';
 import Timer from '../components/Timer';
 
-// import styles from './Header.css';
+import styles from './Header.css';
 
 const Header = () => (
-    <div>
+    <div className={styles.headerContainer}>
         <Timer />
         <ResetButton />
         <Counter />

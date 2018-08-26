@@ -1,0 +1,5 @@
+.headerContainer {
+    background-color: aqua;     /* for debugging */
+    display: flex;
+    justify-content: space-around;
+}

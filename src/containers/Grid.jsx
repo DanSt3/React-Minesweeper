@@ -3,7 +3,7 @@ import React, { Component } from 'react'; // eslint-disable-line no-unused-vars
 import { GameContext } from '../data/GameData';
 import Cell from '../components/Cell';
 
-// import styles from './Grid.css';
+import styles from './Grid.css';
 
 const Grid = () => (
     <GameContext.Consumer>
@@ -12,17 +12,17 @@ const Grid = () => (
             const rows = cells.map((row, rowIndex) => (
                 <tr>
                     {row.map((column, columnIndex) => (
-                        <td>
-                            <Cell row={rowIndex} column={columnIndex} />
-                        </td>
+                        <Cell row={rowIndex} column={columnIndex} />
                     ))}
                 </tr>
             ));
 
             return (
-                <table>
-                    {rows}
-                </table>
+                <div className={styles.gridContainer}>
+                    <table className={styles.gridTable}>
+                        {rows}
+                    </table>
+                </div>
             );
         }}
     </GameContext.Consumer>

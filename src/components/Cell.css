@@ -1,0 +1,61 @@
+.cellSize {
+    height: 30px;
+    width: 30px;
+    text-align: center; 
+    vertical-align: middle;
+}
+
+.hidden {
+    background-color: gray;
+    border: 2px solid white;
+}
+
+.revealed {
+    background-color: white;
+    border: 2px solid darkgray;
+    font-weight: bold;
+}
+
+.marked {
+    color: green;
+}
+
+.mine {
+    color: darkred;
+}
+
+.one {
+    color: teal;
+}
+
+.two {
+    color: peru;
+}
+
+.three {
+    color: crimson;
+}
+
+.four {
+    color: steelblue;
+}
+
+.five {
+    color: darkviolet;
+}
+
+.six {
+    color: gold;
+}
+
+.seven {
+    color: salmon;
+}
+
+.eight {
+    color: limegreen;
+}
+
+.nine {
+    color: deeppink;
+}

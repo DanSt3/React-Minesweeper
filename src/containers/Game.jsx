@@ -3,10 +3,10 @@ import React from 'react';
 import Grid from './Grid';
 import Header from './Header';
 
-// import styles from './Game.css';
+import styles from './Game.css';
 
 const Game = () => (
-    <div>
+    <div className={styles.game}>
         <Header />
         <Grid />
     </div>

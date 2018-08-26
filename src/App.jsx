@@ -8,7 +8,7 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            gameData: new GameData(10, 5, 8),
+            gameData: new GameData(9, 9, 20),
         };
     }
 

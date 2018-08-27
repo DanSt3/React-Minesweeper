@@ -61,7 +61,7 @@ class GameData {
             for (let columnIndex = minColumn;
                 columnIndex <= maxColumn;
                 columnIndex++) {
-                result += cellFunc(this.cells[rowIndex][columnIndex]);
+                result += cellFunc(rowIndex, columnIndex);
             }
         }
 
@@ -72,7 +72,8 @@ class GameData {
         let count = 0;
         if (!cell.isMine()) {
             count = this.adjacentCellIterator(row, column,
-                adjCell => (adjCell.isMine() ? 1 : 0));
+                (adjRow, adjColumn) => (
+                    this.cells[adjRow][adjColumn].isMine() ? 1 : 0));
         } else {
             // cell is a mine
             count = -1;
@@ -82,9 +83,43 @@ class GameData {
     }
 
     revealCell(row, column) {
-        console.log(`Cell (${row}, ${column}) revealed`); // eslint-disable-line no-console
-        this.getCell(row, column).reveal();
-        this.updateFunc(this);
+        const cellData = this.getCell(row, column);
+        // You can't reveal a cell that is currently marked
+        if (!cellData.isMarked()) {
+            console.log(`Cell (${row}, ${column}) revealed`); // eslint-disable-line no-console
+            cellData.reveal();
+
+            // If this cell has no mines around it, reveal all of its neighbors (this will be recursive!)
+            if (cellData.getValue() === 0) {
+                this.adjacentCellIterator(row, column,
+                    (adjRow, adjColumn) => {
+                        if (!this.getCell(adjRow, adjColumn).isRevealed()) {
+                            this.revealCell(adjRow, adjColumn);
+                        }
+                    });
+            }
+            this.updateFunc(this);
+        } else {
+            console.log( // eslint-disable-line no-console
+                `Cell (${row}, ${column}) is marked, can't be revealed`,
+            );
+        }
+    }
+
+    toggleMark(row, column) {
+        // You can't mark a cell that has been revealed
+        const cellData = this.getCell(row, column);
+        if (!cellData.isRevealed()) {
+            cellData.toggleMark();
+            console.log( // eslint-disable-line no-console
+                `Cell (${row}, ${column}) marked = ${cellData.isMarked()}`,
+            );
+            this.updateFunc(this);
+        } else {
+            console.log( // eslint-disable-line no-console
+                `Cell (${row}, ${column}) is revealed, can't be marked`,
+            );
+        }
     }
 }
 

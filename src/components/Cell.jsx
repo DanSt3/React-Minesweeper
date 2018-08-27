@@ -17,7 +17,12 @@ class Cell extends Component {
 
     static getCellOutput(cellData) {
         let output = {};
-        if (!cellData.isRevealed()) {
+        if (cellData.isMarked()) {
+            output = {
+                value: 'Flag',
+                styles: cx(styles.hidden, styles.marked),
+            };
+        } else if (!cellData.isRevealed()) {
             output = {
                 value: '',
                 styles: cx(styles.hidden),
@@ -26,11 +31,6 @@ class Cell extends Component {
             output = {
                 value: 'Mine',
                 styles: cx(styles.revealed, styles.mine),
-            };
-        } else if (cellData.isMarked()) {
-            output = {
-                value: 'Flag',
-                styles: cx(styles.revealed, styles.marked),
             };
         } else {
             const cellValue = cellData.getValue();
@@ -42,9 +42,14 @@ class Cell extends Component {
         return output;
     }
 
-    handleClick(gameData) {
+    handleClick(gameData, event) {
         const { row, column } = this.props;
-        gameData.revealCell(row, column);
+        if (event.shiftKey) {
+            gameData.toggleMark(row, column);
+        } else {
+            gameData.revealCell(row, column);
+        }
+        event.stopPropagation();
     }
 
     handleKeyUp(evt) {

@@ -19,7 +19,6 @@ const Grid = () => (
                             key={`GridCell${rowIndex}-${columnIndex}`}
                             row={rowIndex}
                             column={columnIndex}
-                            cellData={cell}
                         />
                     ))}
                 </tr>

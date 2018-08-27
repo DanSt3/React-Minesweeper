@@ -6,8 +6,50 @@ import { GameContext } from '../data/GameData';
 import styles from './Cell.css';
 
 class Cell extends Component {
+    constructor(props) {
+        super(props);
+        this.handleKeyUp = this.handleKeyUp.bind(this);
+    }
+
     static getColor(value) {
         return cx(Cell.colorStyles[value]);
+    }
+
+    static getCellOutput(cellData) {
+        let output = {};
+        if (!cellData.isRevealed()) {
+            output = {
+                value: '',
+                styles: cx(styles.hidden),
+            };
+        } else if (cellData.isMine()) {
+            output = {
+                value: 'Mine',
+                styles: cx(styles.revealed, styles.mine),
+            };
+        } else if (cellData.isMarked()) {
+            output = {
+                value: 'Flag',
+                styles: cx(styles.revealed, styles.marked),
+            };
+        } else {
+            const cellValue = cellData.getValue();
+            output = {
+                value: (cellValue > 0) ? cellValue : '',
+                styles: cx(styles.revealed, Cell.getColor(cellValue)),
+            };
+        }
+        return output;
+    }
+
+    handleClick(gameData) {
+        const { row, column } = this.props;
+        gameData.revealCell(row, column);
+    }
+
+    handleKeyUp(evt) {
+        const { row, column } = this.props;
+        console.log(`KeyUp Detected at (${row} ,${column}): evt=${evt} `); // eslint-disable-line no-console
     }
 
     render() {
@@ -16,31 +58,24 @@ class Cell extends Component {
                 {(gameData) => {
                     const { row, column } = this.props;
                     const cellData = gameData.getCell(row, column);
-                    let output = {};
-                    if (cellData.isMine()) {
-                        output = {
-                            value: 'Mine',
-                            styles: cx(styles.mine),
-                        };
-                    } else if (cellData.isMarked()) {
-                        output = {
-                            value: 'Flag',
-                            styles: cx(styles.marked),
-                        };
-                    } else {
-                        const cellValue = cellData.getValue();
-                        output = {
-                            value: (cellValue > 0) ? cellValue : '',
-                            styles: Cell.getColor(cellValue),
-                        };
-                    }
+                    const output = Cell.getCellOutput(cellData);
+                    /* (not worrying about accessibility for now - this could
+                        be fixed by making the cells an interactive element
+                        like a button or a href, or by adding selection
+                        highlighting and key handling to replacve the mouse
+                        clicks) */
+                    /* eslint-disable jsx-a11y/no-noninteractive-element-interactions,jsx-a11y/no-noninteractive-tabindex */
                     return (
-                        <td className={cx(styles.cellSize, styles.revealed,
-                            output.styles)}
+                        <td
+                            className={cx(styles.cellSize, output.styles)}
+                            onClick={event => this.handleClick(gameData, event)} // Inefficient - binds a new handler instance on each render, but no better way to pass the gameData parameter
+                            onKeyUp={this.handleKeyUp}
+                            tabIndex="0"
                         >
                             {output.value}
                         </td>
                     );
+                    /* eslint-enable jsx-a11y/no-noninteractive-element-interactions,jsx-a11y/no-noninteractive-tabindex */
                 }}
             </GameContext.Consumer>
         );

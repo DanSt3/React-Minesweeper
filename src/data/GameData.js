@@ -6,7 +6,7 @@ import RandomList from '../utils/RandomList';
 export const GameContext = React.createContext();
 
 class GameData {
-    constructor(rows, columns, mines) {
+    constructor(rows, columns, mines, updateFunc) {
         this.gameState = GameStateEnum.NOT_STARTED;
         this.gridSize = {
             rows,
@@ -17,6 +17,7 @@ class GameData {
         this.revealedRemaining = (rows * columns) - mines;
 
         this.createCells(rows, columns, mines);
+        this.updateFunc = updateFunc;
     }
 
     getCell(rowIndex, columnIndex) {
@@ -49,29 +50,41 @@ class GameData {
         });
     }
 
+    adjacentCellIterator(row, column, cellFunc) {
+        let result = 0;
+        const minRow = (row > 0) ? row - 1 : row;
+        const maxRow = (row < this.gridSize.rows - 1) ? row + 1 : row;
+        for (let rowIndex = minRow; rowIndex <= maxRow; rowIndex++) {
+            const minColumn = (column > 0) ? column - 1 : column;
+            const maxColumn = (column < this.gridSize.columns - 1)
+                ? column + 1 : column;
+            for (let columnIndex = minColumn;
+                columnIndex <= maxColumn;
+                columnIndex++) {
+                result += cellFunc(this.cells[rowIndex][columnIndex]);
+            }
+        }
+
+        return result;
+    }
+
     getCellValue(cell, row, column) {
         let count = 0;
         if (!cell.isMine()) {
-            const minRow = (row > 0) ? row - 1 : row;
-            const maxRow = (row < this.gridSize.rows - 1) ? row + 1 : row;
-            for (let rowIndex = minRow; rowIndex <= maxRow; rowIndex++) {
-                const minColumn = (column > 0) ? column - 1 : column;
-                const maxColumn = (column < this.gridSize.columns - 1)
-                    ? column + 1 : column;
-                for (let columnIndex = minColumn;
-                    columnIndex <= maxColumn;
-                    columnIndex++) {
-                    if (this.cells[rowIndex][columnIndex].isMine()) {
-                        count++;
-                    }
-                }
-            }
+            count = this.adjacentCellIterator(row, column,
+                adjCell => (adjCell.isMine() ? 1 : 0));
         } else {
             // cell is a mine
             count = -1;
         }
 
         return count;
+    }
+
+    revealCell(row, column) {
+        console.log(`Cell (${row}, ${column}) revealed`); // eslint-disable-line no-console
+        this.getCell(row, column).reveal();
+        this.updateFunc(this);
     }
 }
 

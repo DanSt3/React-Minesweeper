@@ -14,11 +14,12 @@ const Grid = () => (
                     array because they will never be reordered, deleted, etc.) */
                 /* eslint-disable react/no-array-index-key */
                 <tr key={`GridRow${rowIndex}`}>
-                    {row.map((column, columnIndex) => (
+                    {row.map((cell, columnIndex) => (
                         <Cell
                             key={`GridCell${rowIndex}-${columnIndex}`}
                             row={rowIndex}
                             column={columnIndex}
+                            cellData={cell}
                         />
                     ))}
                 </tr>

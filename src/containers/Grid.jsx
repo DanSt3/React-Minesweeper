@@ -10,17 +10,27 @@ const Grid = () => (
         {(gameData) => {
             const { cells } = gameData;
             const rows = cells.map((row, rowIndex) => (
-                <tr>
+                /* (it's okay to use the array indices as keys on this
+                    array because they will never be reordered, deleted, etc.) */
+                /* eslint-disable react/no-array-index-key */
+                <tr key={`GridRow${rowIndex}`}>
                     {row.map((column, columnIndex) => (
-                        <Cell row={rowIndex} column={columnIndex} />
+                        <Cell
+                            key={`GridCell${rowIndex}-${columnIndex}`}
+                            row={rowIndex}
+                            column={columnIndex}
+                        />
                     ))}
                 </tr>
+                /* eslint-enable react/no-array-index-key */
             ));
 
             return (
                 <div className={styles.gridContainer}>
                     <table className={styles.gridTable}>
-                        {rows}
+                        <tbody>
+                            {rows}
+                        </tbody>
                     </table>
                 </div>
             );

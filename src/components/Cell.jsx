@@ -35,7 +35,9 @@ class Cell extends Component {
                         };
                     }
                     return (
-                        <td className={cx(styles.cellSize, styles.revealed, output.styles)}>
+                        <td className={cx(styles.cellSize, styles.revealed,
+                            output.styles)}
+                        >
                             {output.value}
                         </td>
                     );

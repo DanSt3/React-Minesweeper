@@ -34,7 +34,9 @@ class CellData {
     }
 
     toggleMark() {
-        this.marked = !this.marked;
+        const newMarked = !this.marked;
+        this.marked = newMarked;
+        return newMarked;
     }
 
     reveal() {

@@ -1,23 +1,16 @@
-import React, { Component } from 'react'; // eslint-disable-line no-unused-vars
+import React from 'react'; // eslint-disable-line no-unused-vars
 
+import { GameContext } from '../data/GameData';
 // import styles from './Timer.css';
 
-class Timer extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            seconds: 0,
-        };
-    }
-
-    render() {
-        const { seconds } = this.state;
-        return (
+const Timer = () => (
+    <GameContext.Consumer>
+        {gameData => (
             <div>
-                {`Timer: ${seconds} sec`}
+                {`Timer: ${gameData.getGameTimeCount()} sec`}
             </div>
-        );
-    }
-}
+        )}
+    </GameContext.Consumer>
+);
 
 export default Timer;

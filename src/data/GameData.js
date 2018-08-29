@@ -8,6 +8,9 @@ export const GameContext = React.createContext();
 class GameData {
     constructor(rows, columns, mines, updateFunc) {
         this.gameState = GameStateEnum.NOT_STARTED;
+        this.gameTimeCount = 0;
+        this.gameTimer = null;
+
         this.gridSize = {
             rows,
             columns,
@@ -22,6 +25,14 @@ class GameData {
 
     getCell(rowIndex, columnIndex) {
         return this.cells[rowIndex][columnIndex];
+    }
+
+    getMinesRemaining() {
+        return (this.mines - this.minesMarked);
+    }
+
+    getGameTimeCount() {
+        return this.gameTimeCount;
     }
 
     createCells(rows, columns, mines) {
@@ -82,39 +93,115 @@ class GameData {
         return count;
     }
 
-    revealCell(row, column) {
-        const cellData = this.getCell(row, column);
-        // You can't reveal a cell that is currently marked
-        if (!cellData.isMarked()) {
-            console.log(`Cell (${row}, ${column}) revealed`); // eslint-disable-line no-console
-            cellData.reveal();
+    getGameState() {
+        return this.gameState;
+    }
 
-            // If this cell has no mines around it, reveal all of its neighbors (this will be recursive!)
-            if (cellData.getValue() === 0) {
-                this.adjacentCellIterator(row, column,
-                    (adjRow, adjColumn) => {
-                        if (!this.getCell(adjRow, adjColumn).isRevealed()) {
-                            this.revealCell(adjRow, adjColumn);
-                        }
-                    });
-            }
+    isGameOver() {
+        return this.gameState === GameStateEnum.GAME_WON
+            || this.gameState === GameStateEnum.GAME_LOST;
+    }
+
+    updateGame() {
+        // If the game hasn't started, begin!
+        if (this.gameState === GameStateEnum.NOT_STARTED) {
+            this.gameState = GameStateEnum.IN_PROGRESS;
+            this.startTimer();
+        }
+
+        // Tell the main app that the game data has changed
+        this.updateFunc(this);
+    }
+
+    startTimer() {
+        this.gameTimeCount = 0; // (should already be 0, but just to be safe)
+        this.gameTimer = window.setInterval(() => {
+            this.gameTimeCount++;
+
+            // Tell the main app that the data has changed
             this.updateFunc(this);
-        } else {
-            console.log( // eslint-disable-line no-console
-                `Cell (${row}, ${column}) is marked, can't be revealed`,
-            );
+        }, 1000);
+    }
+
+    stopTimer() {
+        if (this.gameTimer) {
+            window.clearInterval(this.gameTimer);
         }
     }
 
+    gameWon() {
+        this.gameState = GameStateEnum.GAME_WON;
+        this.stopTimer();
+    }
+
+    gameLost() {
+        this.gameState = GameStateEnum.GAME_LOST;
+        this.stopTimer();
+
+        // Display the remaining undiscovered mines
+        this.cells.forEach((row) => {
+            const hiddenMinesInRow = row.filter(cellData => (
+                cellData.isMine() && !cellData.isRevealed()
+            ));
+            hiddenMinesInRow.forEach((cellData) => {
+                cellData.reveal();
+                this.updateFunc(this);
+            });
+        });
+    }
+
+    revealCell(row, column) {
+        // If the game is over, then this should do nothing
+        if (this.isGameOver()) {
+            return;
+        }
+
+        const cellData = this.getCell(row, column);
+        // You can't reveal a cell that is currently marked or already revealed
+        if (!cellData.isMarked() && !cellData.isRevealed()) {
+            cellData.reveal();
+
+            // If this is a mine - game over, man!
+            if (cellData.isMine()) {
+                this.gameLost();
+            } else {
+                // else we revealed an non-mine space
+                // decrement the count of remaining unrevealed cells
+                this.revealedRemaining = this.revealedRemaining - 1;
+
+                // if there are no cells remaining to be revealed, you've won!
+                if (this.revealedRemaining === 0) {
+                    this.gameWon();
+                } else if (cellData.getValue() === 0) {
+                    // if this cell has no mines around it, reveal all of its neighbors (this will be recursive!)
+                    this.adjacentCellIterator(row, column,
+                        (adjRow, adjColumn) => {
+                            if (!this.getCell(adjRow, adjColumn).isRevealed()) {
+                                this.revealCell(adjRow, adjColumn);
+                            }
+                        });
+                }
+            }
+            this.updateGame();
+        }
+        // else the cell is marked or revealed, so it can't be revealed
+    }
+
     toggleMark(row, column) {
+        // If the game is over, then this should do nothing
+        if (this.isGameOver()) {
+            return;
+        }
+
         // You can't mark a cell that has been revealed
         const cellData = this.getCell(row, column);
         if (!cellData.isRevealed()) {
-            cellData.toggleMark();
-            console.log( // eslint-disable-line no-console
-                `Cell (${row}, ${column}) marked = ${cellData.isMarked()}`,
-            );
-            this.updateFunc(this);
+            // Update the count of marked mines, based on the new marked state
+            const newState = cellData.toggleMark();
+            this.minesMarked = (newState) ? (this.minesMarked + 1)
+                : (this.minesMarked - 1);
+
+            this.updateGame();
         } else {
             console.log( // eslint-disable-line no-console
                 `Cell (${row}, ${column}) is revealed, can't be marked`,

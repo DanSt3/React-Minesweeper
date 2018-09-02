@@ -1,0 +1,19 @@
+.modalBackdrop {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+}
+
+.modalContent {
+    display: table;
+    overflow: hidden;
+    background: white;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+    border: 1px solid dodgerblue;
+    border-radius: 5px;
+}

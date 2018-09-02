@@ -5,7 +5,7 @@ import cx from 'classnames';
 import { GameContext } from '../data/GameData';
 import styles from './Cell.css';
 
-class Cell extends Component {
+export default class Cell extends Component {
     constructor(props) {
         super(props);
         this.handleKeyUp = this.handleKeyUp.bind(this);
@@ -43,6 +43,7 @@ class Cell extends Component {
     }
 
     handleClick(gameData, event) {
+        event.preventDefault();
         const { row, column } = this.props;
         if (event.shiftKey) {
             gameData.toggleMark(row, column);
@@ -97,5 +98,3 @@ Cell.propTypes = {
     row: PropTypes.number.isRequired,
     column: PropTypes.number.isRequired,
 };
-
-export default Cell;

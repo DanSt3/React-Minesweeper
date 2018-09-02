@@ -1,4 +1,4 @@
-class CellData {
+export default class CellData {
     constructor(isMine = false,
         value = -1,
         isMarked = false,
@@ -44,5 +44,3 @@ class CellData {
         this.revealed = true;
     }
 }
-
-export default CellData;

@@ -5,7 +5,7 @@ import RandomList from '../utils/RandomList';
 
 export const GameContext = React.createContext();
 
-class GameData {
+export default class GameData {
     constructor(rows, columns, mines, updateFunc) {
         this.gameState = GameStateEnum.NOT_STARTED;
         this.gameTimeCount = 0;
@@ -113,6 +113,10 @@ class GameData {
         this.updateFunc(this);
     }
 
+    startNewGame(rows, columns, mines) {
+        this.updateFunc(new GameData(rows, columns, mines, this.updateFunc));
+    }
+
     startTimer() {
         this.gameTimeCount = 0; // (should already be 0, but just to be safe)
         this.gameTimer = window.setInterval(() => {
@@ -209,5 +213,3 @@ class GameData {
         }
     }
 }
-
-export default GameData;

@@ -1,13 +1,9 @@
 .cellSize {
     height: 30px;
     width: 30px;
-    text-align: center; 
+    text-align: center;
+    user-select: none;
     vertical-align: middle;
-}
-
-.button {
-    height: 30px;
-    width:  30px;
 }
 
 .hidden {

@@ -35,6 +35,9 @@ export default class ResetButton extends Component {
         return (
             <GameContext.Consumer>
                 {(gameData) => {
+                    const clickHandler = (!gameData.isAnimationInProgress())
+                        ? { onClick: this.handleClick }
+                        : {};
                     let buttonText = 'Ready?';
                     const gameState = gameData.getGameState();
                     if (gameState === GameStateEnum.GAME_WON) {
@@ -47,7 +50,7 @@ export default class ResetButton extends Component {
 
                     return (
                         <div>
-                            <button type="button" onClick={this.handleClick}>
+                            <button type="button" {...clickHandler}>
                                 {buttonText}
                             </button>
                             <Modal show={showModal}>

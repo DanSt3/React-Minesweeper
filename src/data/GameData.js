@@ -5,11 +5,14 @@ import RandomList from '../utils/RandomList';
 
 export const GameContext = React.createContext();
 
+const ANIMATION_INTERVAL = 200; // milliseconds
+
 export default class GameData {
     constructor(rows, columns, mines, level, updateFunc) {
         this.gameState = GameStateEnum.NOT_STARTED;
         this.gameTimeCount = 0;
         this.gameTimer = null;
+        this.animationTimer = null;
 
         this.gridSize = {
             rows,
@@ -38,6 +41,19 @@ export default class GameData {
 
     getGameLevel() {
         return this.gameLevel;
+    }
+
+    isAnimationInProgress() {
+        return (this.animationTimer != null);
+    }
+
+    stopAnimation() {
+        if (this.animationTimer != null) {
+            window.clearInterval(this.animationTimer);
+            this.animationTimer = null;
+            this.updateGame();
+        }
+        console.log('Animation Ended'); // eslint-disable-line no-console
     }
 
     createCells(rows, columns, mines) {
@@ -151,20 +167,35 @@ export default class GameData {
         this.stopTimer();
 
         // Display the remaining undiscovered mines
+        let hiddenMines = [];
         this.cells.forEach((row) => {
-            const hiddenMinesInRow = row.filter(cellData => (
+            hiddenMines = hiddenMines.concat(row.filter(cellData => (
                 cellData.isMine() && !cellData.isRevealed()
-            ));
-            hiddenMinesInRow.forEach((cellData) => {
+            )));
+        });
+
+        const minesToReveal = hiddenMines.length;
+
+        if (minesToReveal > 0) {
+            console.log('Animation started'); // eslint-disable-line no-console
+            // Using an incrementing index here instead of next() is because next() won't tell us we're
+            // done until one call after the last item - that would mean one extra interval delay for us
+            let mineIndex = 0;
+            this.animationTimer = window.setInterval(() => {
+                const cellData = hiddenMines[mineIndex++];
                 cellData.reveal();
                 this.updateFunc(this);
-            });
-        });
+
+                if (mineIndex >= minesToReveal) {
+                    this.stopAnimation();
+                }
+            }, ANIMATION_INTERVAL);
+        }
     }
 
     revealCell(row, column) {
-        // If the game is over, then this should do nothing
-        if (this.isGameOver()) {
+        // If the game is over or we're in the middle of an animation, then this should do nothing
+        if (this.isGameOver() || this.isAnimationInProgress()) {
             return;
         }
 
@@ -200,8 +231,8 @@ export default class GameData {
     }
 
     toggleMark(row, column) {
-        // If the game is over, then this should do nothing
-        if (this.isGameOver()) {
+        // If the game is over or we're in the middle of an animation, then we should do nothing
+        if (this.isGameOver() || this.isAnimationInProgress()) {
             return;
         }
 

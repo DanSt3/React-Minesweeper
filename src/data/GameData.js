@@ -6,7 +6,7 @@ import RandomList from '../utils/RandomList';
 export const GameContext = React.createContext();
 
 export default class GameData {
-    constructor(rows, columns, mines, updateFunc) {
+    constructor(rows, columns, mines, level, updateFunc) {
         this.gameState = GameStateEnum.NOT_STARTED;
         this.gameTimeCount = 0;
         this.gameTimer = null;
@@ -18,6 +18,7 @@ export default class GameData {
         this.mines = mines;
         this.minesMarked = 0;
         this.revealedRemaining = (rows * columns) - mines;
+        this.gameLevel = level;
 
         this.createCells(rows, columns, mines);
         this.updateFunc = updateFunc;
@@ -33,6 +34,10 @@ export default class GameData {
 
     getGameTimeCount() {
         return this.gameTimeCount;
+    }
+
+    getGameLevel() {
+        return this.gameLevel;
     }
 
     createCells(rows, columns, mines) {
@@ -113,8 +118,10 @@ export default class GameData {
         this.updateFunc(this);
     }
 
-    startNewGame(rows, columns, mines) {
-        this.updateFunc(new GameData(rows, columns, mines, this.updateFunc));
+    startNewGame(rows, columns, mines, level) {
+        this.stopTimer();
+        this.updateFunc(new GameData(rows, columns, mines, level,
+            this.updateFunc));
     }
 
     startTimer() {
@@ -130,6 +137,7 @@ export default class GameData {
     stopTimer() {
         if (this.gameTimer) {
             window.clearInterval(this.gameTimer);
+            this.gameTimer = null;
         }
     }
 

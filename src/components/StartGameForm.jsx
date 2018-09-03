@@ -1,14 +1,18 @@
-import React, { Component } from 'react'; // eslint-disable-line no-unused-vars
+import React, { Component, createRef } from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
 
+import CustomGameLevel from './CustomGameLevel';
+import GameLevelEnum from '../data/GameLevelEnum';
 // import styles from './StartGameForm.css';
 
 export default class StartGameForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            choice: 0,
+            choice: StartGameForm.gameOptions
+                .findIndex(option => option.level === props.lastLevel),
         };
+        this.customParameters = createRef();
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -25,7 +29,23 @@ export default class StartGameForm extends Component {
         const { startNewGameFcn } = this.props;
         const { choice } = this.state;
         const option = StartGameForm.gameOptions[choice];
-        startNewGameFcn(option.rows, option.columns, option.mines);
+        if (option.level !== GameLevelEnum.CUSTOM) {
+            startNewGameFcn(option.rows, option.columns, option.mines,
+                option.level);
+        } else {
+            const {
+                rows,
+                columns,
+                mines,
+            } = this.customParameters.current.state;
+            startNewGameFcn(rows, columns, mines, option.level);
+        }
+    }
+
+    isCustomParametersEnabled() {
+        const { choice } = this.state;
+        const { level } = StartGameForm.gameOptions[choice];
+        return (level === GameLevelEnum.CUSTOM);
     }
 
     render() {
@@ -37,7 +57,7 @@ export default class StartGameForm extends Component {
                 : '';
             const checked = (choice === index);
             return (
-                <div>
+                <div key={option.name}>
                     <label htmlFor={option.name}>
                         <input
                             type="radio"
@@ -52,6 +72,14 @@ export default class StartGameForm extends Component {
                         />
                         {`${option.name}:  ${description}`}
                     </label>
+                    {(option.level === GameLevelEnum.CUSTOM)
+                        ? (
+                            <CustomGameLevel
+                                ref={this.customParameters}
+                                disabled={!this.isCustomParametersEnabled()}
+                            />
+                        )
+                        : null}
                 </div>
             );
         });
@@ -67,7 +95,7 @@ export default class StartGameForm extends Component {
                     Cancel
                 </button>
                 <button type="submit">
-                    Start Game
+                    Start New Game
                 </button>
             </form>
         );
@@ -78,20 +106,41 @@ export default class StartGameForm extends Component {
 // defined only once:
 StartGameForm.gameOptions = [
     {
-        name: 'Easy', rows: 9, columns: 9, mines: 10,
+        level: GameLevelEnum.EASY,
+        name: 'Easy',
+        rows: 9,
+        columns: 9,
+        mines: 10,
     },
     {
-        name: 'Medium', rows: 16, columns: 16, mines: 40,
+        level: GameLevelEnum.MEDIUM,
+        name: 'Medium',
+        rows: 16,
+        columns: 16,
+        mines: 40,
     },
     {
-        name: 'Expert', rows: 30, columns: 16, mines: 99,
+        level: GameLevelEnum.EXPERT,
+        name: 'Expert',
+        rows: 30,
+        columns: 16,
+        mines: 99,
     },
     {
-        name: 'Custom', rows: 0, columns: 0, mines: 0,
+        level: GameLevelEnum.CUSTOM,
+        name: 'Custom',
+        rows: 0,
+        columns: 0,
+        mines: 0,
     },
 ];
 
 StartGameForm.propTypes = {
     hideFcn: PropTypes.func.isRequired,
+    lastLevel: PropTypes.instanceOf(GameLevelEnum),
     startNewGameFcn: PropTypes.func.isRequired,
+};
+
+StartGameForm.defaultProps = {
+    lastLevel: 0,
 };

@@ -53,12 +53,14 @@ export default class ResetButton extends Component {
                             <Modal show={showModal}>
                                 <StartGameForm
                                     hideFcn={this.hideModal}
+                                    lastLevel={gameData.getGameLevel()}
                                     startNewGameFcn={
-                                        (row, columns, mines) => {
+                                        (row, columns, mines, level) => {
                                             gameData.startNewGame(
                                                 row,
                                                 columns,
                                                 mines,
+                                                level,
                                             );
                                             this.hideModal();
                                         }

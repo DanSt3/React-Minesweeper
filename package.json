@@ -1,7 +1,7 @@
 {
-  "name": "react-boilerplate",
+  "name": "react-minesweeper",
   "version": "1.0.0",
-  "description": "Simple React - Webpack Project",
+  "description": "React-based version of the classic Minesweeper game",
   "main": "index.js",
   "author": "Dan Steinberg",
   "license": "MIT",

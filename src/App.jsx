@@ -2,15 +2,17 @@ import React, { Component } from 'react'; // eslint-disable-line no-unused-vars
 import ReactDOM from 'react-dom';
 
 import Game from './containers/Game';
+import GameLevelEnum from './data/GameLevelEnum';
 import GameData, { GameContext } from './data/GameData';
 
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            gameData: new GameData(9, 9, 10, (newGameData) => {
-                this.setState({ gameData: newGameData });
-            }),
+            gameData: new GameData(9, 9, 10, GameLevelEnum.EASY,
+                (newGameData) => {
+                    this.setState({ gameData: newGameData });
+                }),
         };
     }
 

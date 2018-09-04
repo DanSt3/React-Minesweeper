@@ -53,7 +53,6 @@ export default class GameData {
             this.animationTimer = null;
             this.updateGame();
         }
-        console.log('Animation Ended'); // eslint-disable-line no-console
     }
 
     createCells(rows, columns, mines) {
@@ -127,7 +126,7 @@ export default class GameData {
         // If the game hasn't started, begin!
         if (this.gameState === GameStateEnum.NOT_STARTED) {
             this.gameState = GameStateEnum.IN_PROGRESS;
-            this.startTimer();
+            this.startGameTimer();
         }
 
         // Tell the main app that the game data has changed
@@ -135,12 +134,12 @@ export default class GameData {
     }
 
     startNewGame(rows, columns, mines, level) {
-        this.stopTimer();
+        this.stopGameTimer();
         this.updateFunc(new GameData(rows, columns, mines, level,
             this.updateFunc));
     }
 
-    startTimer() {
+    startGameTimer() {
         this.gameTimeCount = 0; // (should already be 0, but just to be safe)
         this.gameTimer = window.setInterval(() => {
             this.gameTimeCount++;
@@ -150,7 +149,7 @@ export default class GameData {
         }, 1000);
     }
 
-    stopTimer() {
+    stopGameTimer() {
         if (this.gameTimer) {
             window.clearInterval(this.gameTimer);
             this.gameTimer = null;
@@ -159,21 +158,18 @@ export default class GameData {
 
     gameWon() {
         this.gameState = GameStateEnum.GAME_WON;
-        this.stopTimer();
+        this.stopGameTimer();
     }
 
     gameLost() {
         this.gameState = GameStateEnum.GAME_LOST;
-        this.stopTimer();
+        this.stopGameTimer();
+        this.revealRemainingMines();
+    }
 
+    revealRemainingMines() {
         // Display the remaining undiscovered mines
-        let hiddenMines = [];
-        this.cells.forEach((row) => {
-            hiddenMines = hiddenMines.concat(row.filter(cellData => (
-                cellData.isMine() && !cellData.isRevealed()
-            )));
-        });
-
+        const hiddenMines = this.findRemainingMines();
         const minesToReveal = hiddenMines.length;
 
         if (minesToReveal > 0) {
@@ -191,6 +187,16 @@ export default class GameData {
                 }
             }, ANIMATION_INTERVAL);
         }
+    }
+
+    findRemainingMines() {
+        let hiddenMines = [];
+        this.cells.forEach((row) => {
+            hiddenMines = hiddenMines.concat(row.filter(cellData => (
+                cellData.isMine() && !cellData.isRevealed()
+            )));
+        });
+        return hiddenMines;
     }
 
     revealCell(row, column) {
@@ -217,17 +223,24 @@ export default class GameData {
                     this.gameWon();
                 } else if (cellData.getValue() === 0) {
                     // if this cell has no mines around it, reveal all of its neighbors (this will be recursive!)
-                    this.adjacentCellIterator(row, column,
-                        (adjRow, adjColumn) => {
-                            if (!this.getCell(adjRow, adjColumn).isRevealed()) {
-                                this.revealCell(adjRow, adjColumn);
-                            }
-                        });
+                    this.revealAdjacentCells(row, column);
                 }
             }
             this.updateGame();
         }
         // else the cell is marked or revealed, so it can't be revealed
+    }
+
+    revealAdjacentCells(row, column) {
+        // Create a list of cells to be revealed by checking the adjacent cells and recursively
+        // checking their neighbors if they have no mines too.  Note that we create a list because
+        // it is easier to animate the revealing
+        // if this cell has no mines around it, reveal all of its neighbors (this will be recursive!)
+        this.adjacentCellIterator(row, column, (adjRow, adjColumn) => {
+            if (!this.getCell(adjRow, adjColumn).isRevealed()) {
+                this.revealCell(adjRow, adjColumn);
+            }
+        });
     }
 
     toggleMark(row, column) {

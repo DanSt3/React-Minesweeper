@@ -5,7 +5,8 @@ import RandomList from '../utils/RandomList';
 
 export const GameContext = React.createContext();
 
-const ANIMATION_INTERVAL = 200; // milliseconds
+const MINE_ANIMATION_INTERVAL = 200; // milliseconds
+const OPEN_CELL_ANIMATION_INTERVAL = 100; // milliseconds
 
 export default class GameData {
     constructor(rows, columns, mines, level, updateFunc) {
@@ -159,6 +160,7 @@ export default class GameData {
     gameWon() {
         this.gameState = GameStateEnum.GAME_WON;
         this.stopGameTimer();
+        this.updateFunc(this);
     }
 
     gameLost() {
@@ -173,7 +175,6 @@ export default class GameData {
         const minesToReveal = hiddenMines.length;
 
         if (minesToReveal > 0) {
-            console.log('Animation started'); // eslint-disable-line no-console
             // Using an incrementing index here instead of next() is because next() won't tell us we're
             // done until one call after the last item - that would mean one extra interval delay for us
             let mineIndex = 0;
@@ -185,7 +186,7 @@ export default class GameData {
                 if (mineIndex >= minesToReveal) {
                     this.stopAnimation();
                 }
-            }, ANIMATION_INTERVAL);
+            }, MINE_ANIMATION_INTERVAL);
         }
     }
 
@@ -199,48 +200,85 @@ export default class GameData {
         return hiddenMines;
     }
 
-    revealCell(row, column) {
-        // If the game is over or we're in the middle of an animation, then this should do nothing
-        if (this.isGameOver() || this.isAnimationInProgress()) {
+    clickCell(row, column) {
+        // if the game is over, animation is in progress, or this is cell marked or already revealed
+        const cellData = this.getCell(row, column);
+        if (this.isGameOver() || this.isAnimationInProgress()
+            || cellData.isMarked() || cellData.isRevealed()) {
             return;
         }
 
-        const cellData = this.getCell(row, column);
-        // You can't reveal a cell that is currently marked or already revealed
-        if (!cellData.isMarked() && !cellData.isRevealed()) {
-            cellData.reveal();
-
-            // If this is a mine - game over, man!
-            if (cellData.isMine()) {
-                this.gameLost();
-            } else {
-                // else we revealed an non-mine space
-                // decrement the count of remaining unrevealed cells
-                this.revealedRemaining = this.revealedRemaining - 1;
-
-                // if there are no cells remaining to be revealed, you've won!
-                if (this.revealedRemaining === 0) {
-                    this.gameWon();
-                } else if (cellData.getValue() === 0) {
-                    // if this cell has no mines around it, reveal all of its neighbors (this will be recursive!)
-                    this.revealAdjacentCells(row, column);
-                }
-            }
-            this.updateGame();
+        // If this is a mine - game over, man!
+        if (cellData.isMine()) {
+            this.gameLost();
+            return;
         }
-        // else the cell is marked or revealed, so it can't be revealed
+
+        // create a list of cells to reveal and add this cell to the list
+        // We want to only add each cell only once, so we will use a the cellData's
+        // "toBeRevealed" property
+        const cellsToReveal = [{ row, column }];
+        cellData.setToBeRevealed(true);
+
+        // check if adjacent cells need to be revealed and add them to the list
+        this.checkAdjacentCells(cellsToReveal, row, column);
+
+        // there always be at least one cell to reveal, so don't wait to reveal it
+        this.revealCell(cellsToReveal[0]);
+
+        // if there are more cells to reveal, start animation timer
+        const revealLength = cellsToReveal.length;
+        if (revealLength > 1) {
+            let revealIndex = 1;
+            this.animationTimer = setInterval(() => {
+                // on each animation tick, reveal a cell from the list
+                this.revealCell(cellsToReveal[revealIndex++]);
+
+                // if we're at the end of the list
+                if (revealIndex >= revealLength) {
+                    // end the animation cycle
+                    this.stopAnimation();
+
+                    // if there are no cells remaining to be revealed, you've won!
+                    if (this.revealedRemaining === 0) {
+                        this.gameWon();
+                    }
+                }
+            }, OPEN_CELL_ANIMATION_INTERVAL);
+        } else if (this.revealedRemaining === 0) {
+            // only one cell to reveal and we've revealed it
+            // if there are no cells remaining to be revealed, you've won!
+            this.gameWon();
+        }
     }
 
-    revealAdjacentCells(row, column) {
-        // Create a list of cells to be revealed by checking the adjacent cells and recursively
-        // checking their neighbors if they have no mines too.  Note that we create a list because
-        // it is easier to animate the revealing
-        // if this cell has no mines around it, reveal all of its neighbors (this will be recursive!)
-        this.adjacentCellIterator(row, column, (adjRow, adjColumn) => {
-            if (!this.getCell(adjRow, adjColumn).isRevealed()) {
-                this.revealCell(adjRow, adjColumn);
-            }
-        });
+    checkAdjacentCells(cellsToReveal, row, column) {
+        // if this cell has no mines around it
+        const cellData = this.getCell(row, column);
+        if (cellData.getValue() === 0) {
+            // for each cell adjacent to this cell, reveal all of its neighbors
+            this.adjacentCellIterator(row, column, (adjRow, adjColumn) => {
+                const adjCellData = this.getCell(adjRow, adjColumn);
+                if (!adjCellData.isRevealed()
+                    && !adjCellData.isToBeRevealed()) {
+                    // add that cell to the list to reveal
+                    cellsToReveal.push({ row: adjRow, column: adjColumn });
+                    adjCellData.setToBeRevealed(true);
+
+                    // check if adjacent cells need to be revealed (this will be recursive!)
+                    this.checkAdjacentCells(cellsToReveal, adjRow, adjColumn);
+                }
+            });
+        }
+    }
+
+    revealCell({ row, column }) {
+        const cellData = this.getCell(row, column);
+        if (!cellData.isRevealed()) {
+            cellData.reveal();
+            this.revealedRemaining = this.revealedRemaining - 1;
+            this.updateGame();
+        }
     }
 
     toggleMark(row, column) {

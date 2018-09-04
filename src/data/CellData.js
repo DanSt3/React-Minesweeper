@@ -1,11 +1,13 @@
 export default class CellData {
-    constructor(isMine = false,
-        value = -1,
-        isMarked = false,
-        isRevealed = false) {
-        this.mine = isMine;
-        this.marked = isMarked;
-        this.revealed = isRevealed;
+    constructor(mine = false,
+        value = 0,
+        marked = false,
+        revealed = false,
+        toBeRevealed = false) {
+        this.mine = mine;
+        this.marked = marked;
+        this.revealed = revealed;
+        this.toBeRevealed = toBeRevealed;
         this.value = value;
     }
 
@@ -25,6 +27,14 @@ export default class CellData {
         return this.revealed;
     }
 
+    isToBeRevealed() {
+        return this.toBeRevealed;
+    }
+
+    setToBeRevealed(state) {
+        this.toBeRevealed = state;
+    }
+
     getValue() {
         return this.value;
     }
@@ -42,5 +52,6 @@ export default class CellData {
     reveal() {
         // (not a toggle - once it is revealed it can't be "unrevealed")
         this.revealed = true;
+        this.toBeRevealed = false;
     }
 }

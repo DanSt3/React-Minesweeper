@@ -48,7 +48,7 @@ export default class Cell extends Component {
         if (event.shiftKey) {
             gameData.toggleMark(row, column);
         } else {
-            gameData.revealCell(row, column);
+            gameData.clickCell(row, column);
         }
         event.stopPropagation();
     }

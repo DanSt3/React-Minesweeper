@@ -9,19 +9,19 @@ module.exports = {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
                 use: {
-                    loader: 'babel-loader'
+                    loader: 'babel-loader',
                 },
             },
             {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
-                use: ['babel-loader', 'eslint-loader']
+                use: ['babel-loader', 'eslint-loader'],
             },
             {
                 test: /\.css$/,
                 use: [
                     {
-                        loader: 'style-loader'
+                        loader: 'style-loader',
                     },
                     {
                         loader: 'css-loader',
@@ -30,39 +30,39 @@ module.exports = {
                             importLoaders: 1,
                             localIdentName: '[name]_[local]_[hash:base64]',
                             sourceMap: true,
-                            minimize: true
-                        }
-                    }
-                ]
+                            minimize: true,
+                        },
+                    },
+                ],
             },
             {
                 test: /\.html$/,
                 use: [
                     {
-                        loader: "html-loader",
-                        options: { minimize: true }
-                    }
-                ]
-            }
-        ]
+                        loader: 'html-loader',
+                        options: { minimize: true },
+                    },
+                ],
+            },
+        ],
     },
     resolve: {
-        extensions: ['*', '.js', '.jsx']
+        extensions: ['*', '.js', '.jsx'],
     },
     output: {
         path: __dirname + '/dist',
         publicPath: '/',
-        filename: 'bundle.js'
+        filename: 'bundle.js',
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
         new HtmlWebPackPlugin({
-            template: "./src/index.html",
-            filename: "./index.html"
-        })
+            template: './src/index.html',
+            filename: './index.html',
+        }),
     ],
     devServer: {
         contentBase: './dist',
-        hot: true
-    }
+        hot: true,
+    },
 };

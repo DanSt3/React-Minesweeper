@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import CustomGameLevel from './CustomGameLevel';
 import GameLevelEnum from '../data/GameLevelEnum';
-// import styles from './StartGameForm.css';
+import styles from './StartGameForm.css';
 
 export default class StartGameForm extends Component {
     constructor(props) {
@@ -57,11 +57,12 @@ export default class StartGameForm extends Component {
                 : '';
             const checked = (choice === index);
             return (
-                <div key={option.name}>
+                <div key={option.name} className={styles.options}>
                     <label htmlFor={option.name}>
                         <input
                             type="radio"
                             id={option.name}
+                            className={styles.radioButton}
                             name="level"
                             value={index}
                             rows={option.row}
@@ -84,10 +85,10 @@ export default class StartGameForm extends Component {
             );
         });
         return (
-            <form onSubmit={this.handleSubmit}>
+            <form className={styles.startForm} onSubmit={this.handleSubmit}>
                 <fieldset>
                     <legend>
-                        Select a difficulty level
+                        Select a Difficulty Level
                     </legend>
                     {radioButtons}
                 </fieldset>

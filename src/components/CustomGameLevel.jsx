@@ -1,5 +1,6 @@
 import React, { Component } from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
+import cx from 'classnames';
 
 import styles from './CustomGameLevel.css';
 
@@ -136,10 +137,13 @@ export default class CustomGameLevel extends Component {
         return (
             <fieldset
                 disabled={disabled}
-                className={(disabled) ? styles.disabled : null}
+                className={cx(
+                    styles.customLevel,
+                    (disabled) ? styles.disabled : null,
+                )}
             >
                 <legend>
-                    Choose custom parameters
+                    Choose Custom Parameters:
                 </legend>
                 {this.renderParameters()}
             </fieldset>

@@ -1,0 +1,12 @@
+.startForm {
+    font-family: Helvetica, Arial, sans-serif;
+    margin: 10px;
+}
+
+.options {
+    padding: 5px 0px;
+}
+
+.radioButton {
+    margin-right: 10px;
+}

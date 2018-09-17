@@ -6,3 +6,8 @@
     background-color:lightgray;
     color: darkgray;
 }
+
+.slider {
+    position: relative;
+    top: 5px;
+}

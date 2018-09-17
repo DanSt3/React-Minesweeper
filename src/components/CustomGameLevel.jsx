@@ -114,6 +114,7 @@ export default class CustomGameLevel extends Component {
                     <input
                         type="range"
                         id={item.id}
+                        className={styles.slider}
                         min={item.min}
                         max={item.getMax()}
                         step="1"

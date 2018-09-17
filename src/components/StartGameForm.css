@@ -10,3 +10,10 @@
 .radioButton {
     margin-right: 10px;
 }
+
+.startButton {
+    display: flex;
+    justify-content: space-around;
+    padding-bottom: 4px;
+    padding-top: 11px;
+}

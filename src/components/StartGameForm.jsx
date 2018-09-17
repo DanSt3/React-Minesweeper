@@ -88,16 +88,18 @@ export default class StartGameForm extends Component {
             <form className={styles.startForm} onSubmit={this.handleSubmit}>
                 <fieldset>
                     <legend>
-                        Select a Difficulty Level
+                        Select a Difficulty Level:
                     </legend>
                     {radioButtons}
                 </fieldset>
-                <button type="button" onClick={() => hideFcn()}>
-                    Cancel
-                </button>
-                <button type="submit">
-                    Start New Game
-                </button>
+                <div className={styles.startButton}>
+                    <button type="button" onClick={() => hideFcn()}>
+                        Cancel
+                    </button>
+                    <button type="submit">
+                        Start New Game
+                    </button>
+                </div>
             </form>
         );
     }

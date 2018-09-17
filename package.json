@@ -8,8 +8,8 @@
   "scripts": {
     "start": "webpack-dev-server --config ./webpack.config.js --mode development --devtool eval-cheap-module-source-map",
     "build": "webpack --mode production",
-    "test": "mocha --require babel-core/register --require ./test/helpers.js --require ./test/dom.js --require ignore-styles \"src/**/*.test.js?\"",
-    "test:debug": "mocha --inspect-brk --require babel-core/register --require ./test/helpers.js --require ./test/dom.js --require ignore-styles \"src/**/*.test.js?\"",
+    "test": "mocha --require babel-core/register --require ./test/helpers.js --require ./test/dom.js --require ignore-styles \"src/**/*.test.js*\"",
+    "test:debug": "mocha --inspect-brk --require babel-core/register --require ./test/helpers.js --require ./test/dom.js --require ignore-styles \"src/**/*.test.js*\"",
     "test:watch": "npm run test -- --watch"
   },
   "devDependencies": {

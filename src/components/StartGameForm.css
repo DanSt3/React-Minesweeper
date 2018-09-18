@@ -1,5 +1,5 @@
 .startForm {
-    font-family: Helvetica, Arial, sans-serif;
+    font-family: 'Roboto Condensed', sans-serif;
     margin: 10px;
 }
 
@@ -11,9 +11,16 @@
     margin-right: 10px;
 }
 
-.startButton {
+.buttonPanel {
     display: flex;
     justify-content: space-around;
     padding-bottom: 4px;
     padding-top: 11px;
+}
+
+.buttonPanel button {
+    font-family: inherit;
+    font-size: 15px;
+    padding: 5px;
+    border-radius: 3px;
 }

@@ -92,7 +92,7 @@ export default class StartGameForm extends Component {
                     </legend>
                     {radioButtons}
                 </fieldset>
-                <div className={styles.startButton}>
+                <div className={styles.buttonPanel}>
                     <button type="button" onClick={() => hideFcn()}>
                         Cancel
                     </button>

@@ -1,0 +1,27 @@
+.resetButton {
+    font-family: 'Bangers', cursive;
+    width: 250px;
+    font-size: 28px;
+    border-radius: 10px;
+
+}
+
+.ready {
+    background-color: lightgreen;
+    color: darkslateblue;
+}
+
+.inGame {
+    background-color: lightskyblue;
+    color: indigo;
+}
+
+.won {
+    background-color: darkgreen;
+    color: yellowgreen;
+}
+
+.lost {
+    background-color: mistyrose;
+    color: red;
+}

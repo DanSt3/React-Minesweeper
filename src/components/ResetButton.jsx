@@ -1,11 +1,12 @@
 import React, { Component } from 'react'; // eslint-disable-line no-unused-vars
 
+import cx from 'classnames';
 import { GameContext } from '../data/GameData';
 import GameStateEnum from '../data/GameStateEnum';
 import Modal from '../containers/Modal';
 import StartGameForm from './StartGameForm';
 
-// import styles from './ResetButton.css';
+import styles from './ResetButton.css';
 
 export default class ResetButton extends Component {
     static startNewGame(gameData) {
@@ -38,20 +39,37 @@ export default class ResetButton extends Component {
                     const clickHandler = (!gameData.isAnimationInProgress())
                         ? { onClick: this.handleClick }
                         : {};
-                    let buttonText = 'Ready?';
+                    let buttonData = {
+                        text: 'Ready?',
+                        style: styles.ready,
+                    };
                     const gameState = gameData.getGameState();
                     if (gameState === GameStateEnum.GAME_WON) {
-                        buttonText = 'YOU WON!!';
+                        buttonData = {
+                            text: 'YOU WON!!',
+                            style: styles.won,
+                        };
                     } else if (gameState === GameStateEnum.GAME_LOST) {
-                        buttonText = 'Game Over!';
+                        buttonData = {
+                            text: 'Game Over!',
+                            style: styles.lost,
+                        };
                     } else if (gameState === GameStateEnum.IN_PROGRESS) {
-                        buttonText = 'In Progress...';
+                        buttonData = {
+                            text: 'In Progress...',
+                            style: styles.inGame,
+                        };
                     }
 
                     return (
                         <div>
-                            <button type="button" {...clickHandler}>
-                                {buttonText}
+                            <button
+                                type="button"
+                                className={cx(styles.resetButton,
+                                    buttonData.style)}
+                                {...clickHandler}
+                            >
+                                {buttonData.text}
                             </button>
                             <Modal show={showModal}>
                                 <StartGameForm

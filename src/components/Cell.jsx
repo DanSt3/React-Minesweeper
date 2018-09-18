@@ -1,6 +1,10 @@
 import React, { Component } from 'react'; // eslint-disable-line no-unused-vars
 import PropTypes from 'prop-types';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFlag } from '@fortawesome/free-regular-svg-icons';
+import { faBomb } from '@fortawesome/free-solid-svg-icons';
+
 import cx from 'classnames';
 import { GameContext } from '../data/GameData';
 import styles from './Cell.css';
@@ -19,7 +23,7 @@ export default class Cell extends Component {
         let output = {};
         if (cellData.isMarked()) {
             output = {
-                value: 'Flag',
+                value: <FontAwesomeIcon icon={faFlag} />,
                 styles: cx(styles.hidden, styles.marked),
             };
         } else if (!cellData.isRevealed()) {
@@ -29,7 +33,7 @@ export default class Cell extends Component {
             };
         } else if (cellData.isMine()) {
             output = {
-                value: 'Mine',
+                value: <FontAwesomeIcon icon={faBomb} />,
                 styles: cx(styles.revealed, styles.mine),
             };
         } else {

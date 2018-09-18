@@ -10,11 +10,6 @@ import { GameContext } from '../data/GameData';
 import styles from './Cell.css';
 
 export default class Cell extends Component {
-    constructor(props) {
-        super(props);
-        this.handleKeyUp = this.handleKeyUp.bind(this);
-    }
-
     static getColor(value) {
         return cx(Cell.colorStyles[value]);
     }
@@ -57,11 +52,6 @@ export default class Cell extends Component {
         event.stopPropagation();
     }
 
-    handleKeyUp(evt) {
-        const { row, column } = this.props;
-        console.log(`KeyUp Detected at (${row} ,${column}): evt=${evt} `); // eslint-disable-line no-console
-    }
-
     render() {
         return (
             <GameContext.Consumer>
@@ -74,18 +64,17 @@ export default class Cell extends Component {
                         like a button or a href, or by adding selection
                         highlighting and key handling to replacve the mouse
                         clicks) */
-                    /* eslint-disable jsx-a11y/no-noninteractive-element-interactions,jsx-a11y/no-noninteractive-tabindex */
+                    /* eslint-disable jsx-a11y/no-noninteractive-element-interactions,jsx-a11y/no-noninteractive-tabindex,jsx-a11y/click-events-have-key-events */
                     return (
                         <td
                             className={cx(styles.cellSize, output.styles)}
                             onClick={event => this.handleClick(gameData, event)} // Inefficient - binds a new handler instance on each render, but no better way to pass the gameData parameter
-                            onKeyUp={this.handleKeyUp}
                             tabIndex="0"
                         >
                             {output.value}
                         </td>
                     );
-                    /* eslint-enable jsx-a11y/no-noninteractive-element-interactions,jsx-a11y/no-noninteractive-tabindex */
+                    /* eslint-enable jsx-a11y/no-noninteractive-element-interactions,jsx-a11y/no-noninteractive-tabindex,jsx-a11y/click-events-have-key-events */
                 }}
             </GameContext.Consumer>
         );

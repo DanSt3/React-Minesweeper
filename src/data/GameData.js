@@ -5,8 +5,8 @@ import RandomList from '../utils/RandomList';
 
 export const GameContext = React.createContext();
 
-const MINE_ANIMATION_INTERVAL = 200; // milliseconds
-const OPEN_CELL_ANIMATION_INTERVAL = 100; // milliseconds
+export const MINE_ANIMATION_INTERVAL = 100; // milliseconds
+export const OPEN_CELL_ANIMATION_INTERVAL = 50; // milliseconds
 
 export default class GameData {
     constructor(rows, columns, mines, level, updateFunc) {
@@ -210,6 +210,8 @@ export default class GameData {
 
         // If this is a mine - game over, man!
         if (cellData.isMine()) {
+            cellData.reveal();
+            this.updateFunc(this);
             this.gameLost();
             return;
         }
@@ -296,10 +298,6 @@ export default class GameData {
                 : (this.minesMarked - 1);
 
             this.updateGame();
-        } else {
-            console.log( // eslint-disable-line no-console
-                `Cell (${row}, ${column}) is revealed, can't be marked`,
-            );
         }
     }
 }

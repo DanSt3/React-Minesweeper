@@ -29,5 +29,6 @@
 ## Design Notes:
 - I used "React Context" for holding the game state because I wanted an opportunity to learn it.  The state could just as well be managed by many other frameworks such as Redux or Relay or even the passing Props and Ref callbacks between components (yuck!).
 
-
+## To run the unit tests:
+- Type `yarn test`
  
